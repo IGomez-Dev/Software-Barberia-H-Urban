@@ -1,0 +1,89 @@
+<section class="max-w-xl mx-auto my-14 px-6 text-white">
+    
+  <div class="bg-[#1a1a1a] border border-amber-400/30 shadow-lg shadow-amber-400/10 rounded-2xl p-6 md:p-10 backdrop-blur-sm">
+
+    <h1 class="text-4xl font-extrabold text-amber-400 text-center mb-8 tracking-wide">
+      Reservar Cita
+    </h1>
+
+    <form id="formReserva" class="space-y-6">
+
+      <input 
+        name="nombre" 
+        placeholder="Tu nombre" 
+        required 
+        class="w-full p-3 rounded-xl bg-[#2a2a2a] border border-gray-600 focus:border-amber-400 focus:ring-2 focus:ring-amber-400 outline-none transition"
+      />
+
+      <select
+        name="lugar"
+        required
+        class="w-full p-3 rounded-xl bg-[#2a2a2a] border border-gray-600 text-gray-300 focus:border-amber-400 focus:ring-2 focus:ring-amber-400 transition"
+      >
+        <option value="SanCarlos">San Carlos</option>
+        <option value="Chilca">Chilca</option>
+      </select>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <input 
+          type="date" 
+          name="fecha" 
+          required 
+          class="w-full p-3 rounded-xl bg-[#2a2a2a] border border-gray-600 focus:border-amber-400 focus:ring-2 focus:ring-amber-400 transition"
+        />
+
+        <input 
+          type="time" 
+          name="hora" 
+          required 
+          class="w-full p-3 rounded-xl bg-[#2a2a2a] border border-gray-600 focus:border-amber-400 focus:ring-2 focus:ring-amber-400 transition"
+        />
+      </div>
+
+      <button 
+        class="w-full bg-amber-400 text-black p-3 rounded-xl font-extrabold tracking-wide text-lg hover:bg-amber-300 transition shadow-md hover:shadow-amber-400/40"
+      >
+        Reservar
+      </button>
+
+    </form>
+
+    <p id="respuesta" class="mt-6 text-center text-lg font-semibold"></p>
+
+  </div>
+
+  <script>
+    const form = document.getElementById("formReserva");
+    const res = document.getElementById("respuesta");
+
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formEl = e.currentTarget as HTMLFormElement;
+      const raw = Object.fromEntries(new FormData(formEl));
+
+      const data = {
+        nombre: raw.nombre,
+        lugar: raw.lugar,
+        fecha: raw.fecha,
+        hora: raw.hora
+      };
+
+      const r = await fetch("http://127.0.0.1:8000/citas/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (res) {
+        if (r.ok) {
+          res.textContent = "Cita registrada correctamente ✔️";
+          res.className = "mt-6 text-center text-green-400 font-semibold";
+        } else {
+          res.textContent = "Horario no disponible ❌";
+          res.className = "mt-6 text-center text-red-400 font-semibold";
+        }
+      }
+    });
+  </script>
+</section>

@@ -1,0 +1,77 @@
+<section class="max-w-xl mx-auto my-33 px-6 text-white">
+    
+  <div class="bg-[#1a1a1a] border border-amber-400/30 shadow-lg shadow-amber-400/10 rounded-2xl p-6 md:p-10 backdrop-blur-sm">
+
+    <h1 class="text-4xl font-extrabold text-amber-400 text-center mb-8 tracking-wide">
+      Iniciar Sesión
+    </h1>
+
+    <form id="formLogin" class="space-y-6">
+
+      <input 
+        type="text"
+        name="nombre" 
+        placeholder="Tu nombre" 
+        required 
+        class="w-full p-3 rounded-xl bg-[#2a2a2a] border border-gray-600 focus:border-amber-400 focus:ring-2 focus:ring-amber-400 outline-none transition"
+      />
+
+      <input 
+        type="password"
+        name="password" 
+        placeholder="Contraseña" 
+        required 
+        class="w-full p-3 rounded-xl bg-[#2a2a2a] border border-gray-600 focus:border-amber-400 focus:ring-2 focus:ring-amber-400 outline-none transition"
+      />
+
+      <button 
+        class="w-full bg-amber-400 text-black p-3 rounded-xl font-extrabold tracking-wide text-lg hover:bg-amber-300 transition shadow-md hover:shadow-amber-400/40"
+      >
+        Entrar
+      </button>
+
+    </form>
+
+    <p id="respuestaLogin" class="mt-6 text-center text-lg font-semibold"></p>
+
+  </div>
+
+<script>
+  const form = document.getElementById("formLogin") as HTMLFormElement | null;
+  const res = document.getElementById("respuestaLogin");
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const raw = Object.fromEntries(new FormData(e.currentTarget as HTMLFormElement));
+
+    const data = {
+      nombre: raw.nombre,
+      password: raw.password
+    };
+
+    const r = await fetch("http://127.0.0.1:8000/login/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+
+    const json = await r.json();
+
+    if (r.ok) {
+      localStorage.setItem("token", json.access_token);
+      localStorage.setItem("role", json.role);
+      window.location.href = json.role === "admin" 
+        ? "/admin/dashboard" 
+        : "/owner/dashboard";
+    } else {
+      if (res) {
+        res.textContent = json.detail || "Nombre o contraseña incorrectos ❌";
+        res.className = "mt-6 text-center text-red-400 font-semibold";
+      }
+    }
+  });
+</script>
+
+
+</section>
